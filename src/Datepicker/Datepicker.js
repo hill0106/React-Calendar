@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { If, Then, ElseIf, Else } from "react-if-elseif-else-render";
 import "./Datepickerstyle.css";
 
 let oneDay = 60 * 60 * 24 * 1000;
@@ -10,7 +11,7 @@ let a = +new Date();
 let Month = new Date().getMonth();
 let inputRef = React.createRef();
 
-class MyDatePicker extends Component {
+export default class MyDatePicker extends Component {
   state = {
     getDetails: [],
   };
@@ -41,9 +42,11 @@ class MyDatePicker extends Component {
       selectedMonth: Month,
       selectedYear: year,
       Details: this.getDetails(year, month), //array
-      showMonthPicker: false,
+      yearDetails: this.getYearDetails(year), //array
+      showMonthPicker: 1,
       onClickMonth: false,
       showDatePicker: true,
+      showPicker: 0,
       monthDetails: data,
     };
   }
@@ -51,6 +54,7 @@ class MyDatePicker extends Component {
   componentDidMount() {
     this.setDateToInput(this.state.selectedDay);
     this.setMonthToInput(this.state.selectedMonth);
+    this.setYearToInput(this.state.selectedYear);
   }
 
   /**
@@ -123,7 +127,6 @@ class MyDatePicker extends Component {
     let monthArray = [];
     let currentDay = null;
     let index = 0;
-
     for (let i = 0; i < 6; i++) {
       for (let j = 0; j < 7; j++) {
         currentDay = this.getDayDetails({
@@ -142,20 +145,33 @@ class MyDatePicker extends Component {
 
   getYearDetails = (year) => {
     let yearArray = [];
-    if (this.state.year >= 1997 && this.state.year <= 2008) {
-      let i = 1997;
-      yearArray.push(i);
-    } else if (this.state.year >= 2009 && this.state.year <= 2020) {
-      let i = 2009;
-      yearArray.push(i);
-      i++;
-    } else if (this.state.year >= 2021 && this.state.year <= 2032) {
-      let i = 2021;
-      yearArray.push(i);
-      i++;
+    if (year >= 1997 && year <= 2008) {
+      for (let i = 1997; i <= 2008; i++) yearArray.push(i);
+    } else if (year >= 2009 && year <= 2020) {
+      for (let i = 2009; i <= 2020; i++) yearArray.push(i);
+    } else if (year >= 2021 && year <= 2032) {
+      for (let i = 2021; i <= 2032; i++) yearArray.push(i);
     }
-    console.log(yearArray);
     return yearArray;
+  };
+
+  getYearOutput = (year) => {
+    let output = [];
+    let yearFirstOutput = 0,
+      yearLastOutput = 0;
+    if (year >= 1997 && year <= 2008) {
+      yearFirstOutput = 1998;
+      yearLastOutput = 2007;
+    } else if (year >= 2009 && year <= 2020) {
+      yearFirstOutput = 2010;
+      yearLastOutput = 2019;
+    } else if (year >= 2021 && year <= 2032) {
+      yearFirstOutput = 2022;
+      yearLastOutput = 2031;
+    }
+    output.push(yearFirstOutput.toString() + "-" + yearLastOutput.toString());
+
+    return output;
   };
 
   isCurrentDay = (day) => {
@@ -174,6 +190,10 @@ class MyDatePicker extends Component {
   isSelectedMonth = (m) => {
     m = this.CurrentMonthToNum(m);
     return m === this.state.selectedMonth;
+  };
+
+  isSelectedYear = (y) => {
+    return y === this.state.selectedYear;
   };
 
   getDateFromDateString = (dateValue) => {
@@ -222,6 +242,14 @@ class MyDatePicker extends Component {
     }
   };
 
+  setYearDate = (y) => {
+    let selectedYear = new Date(y.year).getTime();
+    this.setState({ selectedYear });
+    if (this.props.onChange) {
+      this.props.onChange(selectedYear);
+    }
+  };
+
   updateDateFromInput = () => {
     let dateValue = inputRef.current.value;
     let dateData = this.getDateFromDateString(dateValue);
@@ -246,6 +274,10 @@ class MyDatePicker extends Component {
     inputRef.current.value = dateString;
   };
 
+  setYearToInput = (y) => {
+    inputRef.current.value = y;
+  };
+
   onDateClick = (day) => {
     this.setState({ selectedDay: day.timestamp }, () =>
       this.setDateToInput(day.timestamp)
@@ -263,44 +295,53 @@ class MyDatePicker extends Component {
     }
   };
 
+  onYearClick = (y) => {
+    this.setState({ showPicker: 0 });
+    this.setState({ selectedYear: y }, () => this.setYearToInput(y));
+    if (this.props.onChange) {
+      this.props.onChange(y);
+    }
+  };
+
   onTitleClick = () => {
-    this.setState({ showMonthPicker: true });
-    this.setState({ showDatePicker: false });
+    this.setState({ showPicker: 1 });
   };
 
   onTitleYearClick = () => {
+    this.setState({ showPicker: 2 });
     this.setState({ showMonthPicker: false });
+    // console.log("titleYear Clicked");
   };
 
   handleOnClickMonth = (year, month) => {
     this.setState({ onClickMonth: true });
-    this.setState({ showDatePicker: true });
+    this.setState({ showPicker: 0 });
     month = this.CurrentMonthToNum(month);
     this.setState({ year: year });
     this.setState({ month: month });
     this.setState({
       Details: this.getDetails(year, month),
     });
-    console.log(year, month);
+    //console.log(year, month);
   };
 
-  handleOnClickYear = (year) => {
-    this.setState({ onClickMonth: true });
-    this.setState({ showDatePicker: true });
+  handleOnClickYear = (year, month) => {
     this.setState({ year: year });
+    this.setState({ month: month });
+    this.setState({ showPicker: 0 });
     this.setState({
-      Details: this.getDetails(year),
+      Details: this.getDetails(year, month),
     });
-    console.log(year);
   };
 
   setYear = (offset) => {
     let year = this.state.year + offset;
-    let month = this.state.month;
     this.setState({
       year,
-      Details: this.getDetails(year, month), //array
+      yearDetails: this.getYearDetails(year), //array
     });
+
+    // console.log(this.state.year);
   };
 
   setMonth = (offset) => {
@@ -337,14 +378,7 @@ class MyDatePicker extends Component {
           key={index}
         >
           <div className="cdc-day">
-            <span
-              onClick={() => [
-                this.onDateClick(day),
-                console.log(this.isSelectedDay(day)),
-              ]}
-            >
-              {day.date}
-            </span>
+            <span onClick={() => [this.onDateClick(day)]}>{day.date}</span>
           </div>
         </div>
       );
@@ -416,26 +450,29 @@ class MyDatePicker extends Component {
   }
 
   renderYearPicker() {
-    let yearData = this.state.monthDetails.map((m, index) => {
+    let yearData = this.state.yearDetails.map((y, index) => {
       return (
         <div className="MonthContainer">
           <div className={"month-name-container"}>
             <div
               className={
-                this.isSelectedMonth(m)
-                  ? "month-name-highlighted"
-                  : "month-name-nohighlight"
+                index === 0 || index === 11
+                  ? "disabled"
+                  : "" +
+                    (this.isSelectedYear(y)
+                      ? "month-name-highlighted"
+                      : "month-name-nohighlight")
               }
               key={index}
             >
               <div className="monthClick">
                 <span
                   onClick={() => [
-                    this.onMonthClick(m),
-                    this.handleOnClickMonth(this.state.year, m),
+                    this.onYearClick(y),
+                    this.handleOnClickYear(y, this.state.month),
                   ]}
                 >
-                  {m}
+                  {y}
                 </span>
               </div>
             </div>
@@ -453,9 +490,7 @@ class MyDatePicker extends Component {
             </div>
           </div>
           <div className="title-container">
-            <div className="title">
-              {[this.state.year - 10, "-", this.state.year]}
-            </div>
+            <div className="title">{this.getYearOutput(this.state.year)}</div>
           </div>
           <div className="mdpch-button">
             <div className="mdpchb-inner" onClick={() => this.setYear(10)}>
@@ -463,15 +498,7 @@ class MyDatePicker extends Component {
             </div>
           </div>
         </div>
-        <div className="c-container">
-          <div className="cc-head">
-            {[].map((d, i) => (
-              <div key={i} className="month-name">
-                {d}
-              </div>
-            ))}
-          </div>
-        </div>
+        <div>{yearData}</div>
       </div>
     );
   }
@@ -484,51 +511,47 @@ class MyDatePicker extends Component {
           onChange={this.updateDateFromInput}
           ref={inputRef}
         >
-          {/*
-          <div className="mdp-input">
-            <input
-              type="date"
-              onChange={this.updateDateFromInput}
-              ref={inputRef}
-            />
-    </div>*/}
-          {this.state.showDatePicker ? (
-            <div className="mdp-container">
-              <div className="header">
-                <div className="mdpch-button">
-                  <div
-                    className="mdpchb-inner"
-                    onClick={() => this.setMonth(-1)}
-                  >
-                    <span className="mdpchbi-left-arrow"></span>
+          <If condition={this.state.showPicker === 0}>
+            <Then>
+              <div className="mdp-container">
+                <div className="header">
+                  <div className="mdpch-button">
+                    <div
+                      className="mdpchb-inner"
+                      onClick={() => this.setMonth(-1)}
+                    >
+                      <span className="mdpchbi-left-arrow"></span>
+                    </div>
+                  </div>
+                  <div className="title-container" onClick={this.onTitleClick}>
+                    <div className="title">
+                      {this.getMonthStr(this.state.month)}
+                    </div>
+                    <div className="title">{this.state.year}</div>
+                  </div>
+                  <div className="mdpch-button">
+                    <div
+                      className="mdpchb-inner"
+                      onClick={() => this.setMonth(1)}
+                    >
+                      <span className="mdpchbi-right-arrow"></span>
+                    </div>
                   </div>
                 </div>
-                <div className="title-container" onClick={this.onTitleClick}>
-                  <div className="title">
-                    {this.getMonthStr(this.state.month)}
-                  </div>
-                  <div className="title">{this.state.year}</div>
-                </div>
-                <div className="mdpch-button">
-                  <div
-                    className="mdpchb-inner"
-                    onClick={() => this.setMonth(1)}
-                  >
-                    <span className="mdpchbi-right-arrow"></span>
-                  </div>
-                </div>
+                <div>{this.renderCalendar()}</div>
               </div>
-              <div>{this.renderCalendar()}</div>
-            </div>
-          ) : this.state.showMonthPicker ? (
-            <div>{this.renderMonthPicker()}</div>
-          ) : (
-            <div>{this.renderYearPicker()}</div>
-          )}
+            </Then>
+            <ElseIf condition={this.state.showPicker === 1}>
+              <div>{this.renderMonthPicker()}</div>
+            </ElseIf>
+            <ElseIf condition={this.state.showPicker === 2}>
+              <Then>
+                <div>{this.renderYearPicker()}</div>
+              </Then>
+            </ElseIf>
+          </If>
         </div>
       </div>
     );
   }
 }
-
-export default MyDatePicker;
