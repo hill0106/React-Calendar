@@ -48,6 +48,8 @@ export default class MyDatePicker extends Component {
       showDatePicker: true,
       showPicker: 0,
       monthDetails: data,
+      showSubYearButton: true,
+      showAddYearButton: true,
     };
   }
 
@@ -162,12 +164,14 @@ export default class MyDatePicker extends Component {
     if (year >= 1997 && year <= 2008) {
       yearFirstOutput = 1998;
       yearLastOutput = 2007;
+      //this.setState({ showSubYearButton: false });
     } else if (year >= 2009 && year <= 2020) {
       yearFirstOutput = 2010;
       yearLastOutput = 2019;
     } else if (year >= 2021 && year <= 2032) {
       yearFirstOutput = 2022;
       yearLastOutput = 2031;
+      //this.setState({ showAddYearButton: false });
     }
     output.push(yearFirstOutput.toString() + "-" + yearLastOutput.toString());
 
@@ -341,7 +345,7 @@ export default class MyDatePicker extends Component {
       yearDetails: this.getYearDetails(year), //array
     });
 
-    // console.log(this.state.year);
+    console.log(this.state.year);
   };
 
   setMonth = (offset) => {
@@ -485,7 +489,15 @@ export default class MyDatePicker extends Component {
       <div className="DatePicker-container">
         <div className="header">
           <div className="mdpch-button">
-            <div className="mdpchb-inner" onClick={() => this.setYear(-10)}>
+            <div
+              className={
+                (this.state.year <= 2032 && this.state.year >= 2021) ||
+                (this.state.year <= 2020 && this.state.year >= 2009)
+                  ? "mdpchb-inner"
+                  : "NoShow-mdpchb-inner"
+              }
+              onClick={() => this.setYear(-10)}
+            >
               <span className="mdpchbi-left-arrow"></span>
             </div>
           </div>
@@ -493,7 +505,15 @@ export default class MyDatePicker extends Component {
             <div className="title">{this.getYearOutput(this.state.year)}</div>
           </div>
           <div className="mdpch-button">
-            <div className="mdpchb-inner" onClick={() => this.setYear(10)}>
+            <div
+              className={
+                (this.state.year >= 1997 && this.state.year <= 2008) ||
+                (this.state.year <= 2020 && this.state.year >= 2009)
+                  ? "mdpchb-inner"
+                  : "NoShow-mdpchb-inner"
+              }
+              onClick={() => this.setYear(10)}
+            >
               <span className="mdpchbi-right-arrow"></span>
             </div>
           </div>
