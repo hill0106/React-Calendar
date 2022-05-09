@@ -1,3 +1,7 @@
+.Background {
+    background-color: #dcfbeb;
+    height: 100vh;
+}
 .MyDatePicker {
     display: flex;
     justify-content: center;
@@ -43,7 +47,7 @@
 }
 .mdpchb-inner:hover{ 
     cursor: pointer;
-    background: #eeeeee;
+    background-color: #eafabf;
 }
 .mdpchb-inner {
     float: left;
@@ -107,7 +111,13 @@
     left: 3px;
     top: -5px
 }
- 
+.year-title-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 100%;
+}
 
 .title-container{
     display: flex;
@@ -128,7 +138,8 @@
     pointer-events: none;
 }
 .title-container:hover{
-    background-color: #eee;
+    background-color: #eafabf;
+    border-radius: 10px;
 }
 .title{
     display: flex;
@@ -222,7 +233,7 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    background: #eee;
+    background-color: #eafabf;
     color: black;
 }  
 .monthClick span{
@@ -231,16 +242,17 @@
     align-items: center;
     border-radius: 100%;
 }
-.month-name-highlighted span{ 
+.month-name-highlighted .monthClick span{ 
     display: flex;
     justify-content: center;
     align-items: center;
     width: 30px;
     height: 30px;
     border-radius: 100%;
-    background-color: red;
+    background: #119574;
     color: white;
-    cursor: pointer;
+    /* cursor: pointer; */
+    
 }
 .month-name-nohighlight span{
     display: flex;
@@ -252,7 +264,10 @@
     cursor: pointer;
 }
 .month-name-nohight:hover{
-    background-color: #eee;
+    background-color: #eafabf;
+}
+.month-name-container .disabled .monthClick span {
+    color: #d8d8d8;
 }
 .cc-body{ 
     height: 270px;
@@ -280,7 +295,7 @@
 
 .cdc-day span:hover{
     cursor: pointer;
-    background: #eee;
+    background-color: #eafabf;
 } 
 .cdc-day span{
     width: 30px;
@@ -298,13 +313,14 @@
 }
 
 .c-day-container.disabled .cdc-day span{
-    color: #eeeeee;
+    color: #d8d8d8;
 }
 .c-day-container.highlight .cdc-day span{
-    color: red;
+    color: rgb(239, 167, 167);
+    font-weight: 700;
 }
 .c-day-container.highlighted .cdc-day span{
-    background: red;
+    background: #119574;
     color: white;
 }
 .tmp{

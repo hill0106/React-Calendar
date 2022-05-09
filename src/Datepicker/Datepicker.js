@@ -501,7 +501,7 @@ export default class MyDatePicker extends Component {
               <span className="mdpchbi-left-arrow"></span>
             </div>
           </div>
-          <div className="title-container">
+          <div className="year-title-container">
             <div className="title">{this.getYearOutput(this.state.year)}</div>
           </div>
           <div className="mdpch-button">
@@ -525,7 +525,7 @@ export default class MyDatePicker extends Component {
 
   render() {
     return (
-      <div>
+      <div className="Background">
         <div
           className="MyDatePicker"
           onChange={this.updateDateFromInput}
